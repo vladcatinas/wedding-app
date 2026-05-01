@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💍 Wedding Planner</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <div class="sb-brand">💍 Wedding Planner</div>
+      <div class="sb-wedding">
+        <select id="wedding-select"></select>
+        <button class="btn btn-danger btn-sm" id="btn-delete-wedding" title="Delete current wedding"
+                style="margin-top:6px;width:100%">🗑 Delete this wedding</button>
+      </div>
+      <div class="sb-nav">
+        <button class="nav-item active" data-tab="dashboard"><span class="icon">🏠</span> Dashboard</button>
+        <button class="nav-item" data-tab="guests"><span class="icon">👥</span> Guests</button>
+        <button class="nav-item" data-tab="seating"><span class="icon">🪑</span> Seating</button>
+        <button class="nav-item" data-tab="budget"><span class="icon">💰</span> Buget</button>
+      </div>
+      <div class="sb-actions">
+        <button class="btn btn-secondary btn-sm" id="btn-new-wedding">+ New Wedding</button>
+        <button class="btn btn-ghost btn-sm" id="btn-export">⬇ Export JSON</button>
+        <label class="btn btn-ghost btn-sm" style="justify-content:center;cursor:pointer">
+          ⬆ Import JSON
+          <input type="file" id="import-json-input" accept=".json" style="display:none" />
+        </label>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+      <header id="header">
+        <span id="header-title">Dashboard</span>
+        <div class="header-actions">
+          <button class="btn btn-primary btn-sm" id="btn-add-guest">+ Add Guest</button>
+        </div>
+      </header>
+      <main id="content"></main>
+    </div>
+
+    <!-- Bottom Nav (mobile) -->
+    <nav id="bottom-nav">
+      <button class="bn-item active" data-tab="dashboard"><span class="icon">🏠</span>Dashboard</button>
+      <button class="bn-item" data-tab="guests"><span class="icon">👥</span>Guests</button>
+      <button class="bn-item" data-tab="seating"><span class="icon">🪑</span>Seating</button>
+      <button class="bn-item" data-tab="budget"><span class="icon">💰</span>Buget</button>
+    </nav>
+  </div>
+
+  <!-- Guest Modal -->
+  <div class="modal-overlay" id="guest-modal">
+    <div class="modal">
+      <div class="modal-hdr">
+        <h2 id="gm-title">Add Guest</h2>
+        <button class="modal-close" data-close="guest-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="gm-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="gm-name" placeholder="Jane Smith" />
+            <div class="err" id="err-name"></div>
+          </div>
+          <div class="form-group">
+            <label>Side</label>
+            <select id="gm-side">
+              <option value="bride">Bride's Side</option>
+              <option value="groom">Groom's Side</option>
+              <option value="common">Common</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="gm-email" placeholder="jane@example.com" />
+            <div class="err" id="err-email"></div>
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="gm-phone" placeholder="+1-555-0000" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>RSVP Status</label>
+            <select id="gm-rsvp">
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="declined">Declined</option>
+              <option value="maybe">Maybe</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Party Size</label>
+            <input type="number" id="gm-party" min="1" max="8" value="1" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Table Assignment</label>
+          <select id="gm-table"><option value="">— Unassigned —</option></select>
+        </div>
+        <div class="form-group">
+          <label>Dietary Restrictions</label>
+          <input type="text" id="gm-dietary" placeholder="vegetarian, gluten-free…" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Am fost la nuntă?</label>
+            <select id="gm-attended">
+              <option value="pending">— Nu știu încă —</option>
+              <option value="yes">Da, a venit</option>
+              <option value="no">Nu a venit</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sumă cadou</label>
+            <input type="text" id="gm-gift" placeholder="ex: 500 RON" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="gm-notes" rows="2" placeholder="Allergies, preferences…"></textarea>
+        </div>
+      </div>
+      <div class="modal-ftr">
+        <button class="btn btn-danger btn-sm" id="gm-delete" style="display:none;margin-right:auto">Delete Guest</button>
+        <button class="btn btn-ghost" data-close="guest-modal">Cancel</button>
+        <button class="btn btn-primary" id="gm-save">Save Guest</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wedding Modal -->
+  <div class="modal-overlay" id="wedding-modal">
+    <div class="modal">
+      <div class="modal-hdr">
+        <h2>New Wedding</h2>
+        <button class="modal-close" data-close="wedding-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label>Partner 1 *</label><input type="text" id="wm-p1" placeholder="Alex" /></div>
+          <div class="form-group"><label>Partner 2 *</label><input type="text" id="wm-p2" placeholder="Jordan" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Wedding Date</label><input type="date" id="wm-date" /></div>
+          <div class="form-group"><label>Location</label><input type="text" id="wm-location" placeholder="Paris, France" /></div>
+        </div>
+      </div>
+      <div class="modal-ftr">
+        <button class="btn btn-ghost" data-close="wedding-modal">Cancel</button>
+        <button class="btn btn-primary" id="wm-save">Create Wedding</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import CSV Modal -->
+  <div class="modal-overlay" id="import-modal">
+    <div class="modal modal-lg">
+      <div class="modal-hdr">
+        <h2>Import Guest List</h2>
+        <button class="modal-close" data-close="import-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Step 1: Upload -->
+        <div id="import-step-1">
+          <p style="color:var(--muted);margin-bottom:16px;font-size:14px">
+            Upload a <strong>CSV</strong> file. Expected columns (order flexible):
+            <code>Nume, Side, RSVP Status, Dieta, Notes</code>
+          </p>
+          <div class="drop-zone" id="csv-drop-zone">
+            <span class="drop-icon">📂</span>
+            <p>Drag &amp; drop a CSV file here, or</p>
+            <label class="btn btn-primary btn-sm" style="cursor:pointer">
+              Browse File
+              <input type="file" id="csv-file-input" accept=".csv,.tsv,text/csv" style="display:none" />
+            </label>
+            <p class="drop-hint-text">Supports .csv and .tsv</p>
+          </div>
+          <div class="import-template">
+            <button class="btn btn-ghost btn-sm" id="btn-download-template">⬇ Download CSV Template</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Map columns -->
+        <div id="import-step-2" style="display:none">
+          <div class="import-mapping">
+            <h3 style="font-size:14px;margin-bottom:12px;color:var(--muted)">Map your columns</h3>
+            <div class="mapping-grid" id="mapping-grid"></div>
+          </div>
+          <div class="import-preview">
+            <h3 style="font-size:14px;margin:16px 0 8px;color:var(--muted)">Preview <span id="preview-count"></span></h3>
+            <div style="overflow-x:auto">
+              <table id="preview-table">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Options -->
+        <div id="import-step-3" style="display:none">
+          <div class="import-summary" id="import-summary"></div>
+          <div class="form-group" style="margin-top:16px">
+            <label>Import mode</label>
+            <select id="import-mode">
+              <option value="merge">Merge (skip duplicates by name)</option>
+              <option value="append">Append all (allow duplicates)</option>
+              <option value="replace">Replace all guests</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-ftr" id="import-footer">
+        <button class="btn btn-ghost" data-close="import-modal">Cancel</button>
+        <button class="btn btn-secondary" id="btn-import-back" style="display:none">← Back</button>
+        <button class="btn btn-primary" id="btn-import-next">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

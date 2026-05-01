@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Read(//mnt/**)",
+      "Read(//d//**)",
+      "Bash(mount)",
+      "Read(//d/d/Wedding Planner App/src/**)",
+      "Read(//d/d/Wedding Planner App/src/styles/**)"
+    ]
+  }
+}
