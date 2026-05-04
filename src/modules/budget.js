@@ -37,7 +37,7 @@ export function renderBudget(w) {
       </div>
     </div>
 
-    <!-- Summary cards (now with Cost/Invitat) -->
+    <!-- Summary cards -->
     <div class="bud-summary">
       <div class="bud-card bud-card-total">
         <div class="bud-card-lbl">Cost Total Nuntă</div>
@@ -45,27 +45,17 @@ export function renderBudget(w) {
         <div class="bud-card-sub">≈ ${fmtEur(t.totalEur)}</div>
       </div>
       <div class="bud-card bud-card-perguest">
-        <div class="bud-card-lbl">💵 Cost / Invitat (mediu)</div>
+        <div class="bud-card-lbl">💵 Cost / Invitat</div>
         <div class="bud-card-val">${fmtRon(costPerGuestRon)}</div>
         <div class="bud-card-sub">≈ ${fmtEur(costPerGuestEur)} · ${guestCount} invitați</div>
       </div>
       <div class="bud-card">
-        <div class="bud-card-lbl">Avans (până la nuntă)</div>
-        <div class="bud-card-val">${fmtRon(t.avansRon)}</div>
-        <div class="bud-card-sub">${fmtEur(t.avansEur)}</div>
-      </div>
-      <div class="bud-card">
-        <div class="bud-card-lbl">Rest de Plată (după nuntă)</div>
-        <div class="bud-card-val">${fmtRon(t.restRon)}</div>
-        <div class="bud-card-sub">${fmtEur(t.restEur)}</div>
-      </div>
-      <div class="bud-card">
-        <div class="bud-card-lbl">Plătit Total</div>
+        <div class="bud-card-lbl">Plătit</div>
         <div class="bud-card-val c-confirmed">${fmtRon(t.paidRon)}</div>
         <div class="bud-card-sub">${fmtEur(t.paidEur)}</div>
       </div>
       <div class="bud-card">
-        <div class="bud-card-lbl">De Plătit</div>
+        <div class="bud-card-lbl">Rămas de Plătit</div>
         <div class="bud-card-val ${t.unpaidRon>0?'c-pending':''}">${fmtRon(t.unpaidRon)}</div>
         <div class="bud-card-sub">${fmtEur(t.unpaidEur)}</div>
       </div>
@@ -91,7 +81,6 @@ export function renderBudget(w) {
               <th>Furnizor</th>
               <th colspan="2" class="bud-th-grp avans">Avans (până la nuntă)</th>
               <th colspan="2" class="bud-th-grp rest">Rest plată (după nuntă)</th>
-              <th colspan="2" class="bud-th-grp total">Total</th>
               <th>Plătit</th>
               <th></th>
             </tr>
@@ -99,7 +88,6 @@ export function renderBudget(w) {
               <th></th><th></th>
               <th class="bud-sub avans">RON</th><th class="bud-sub avans">EUR</th>
               <th class="bud-sub rest">RON</th><th class="bud-sub rest">EUR</th>
-              <th class="bud-sub total">RON</th><th class="bud-sub total">EUR</th>
               <th></th><th></th>
             </tr>
           </thead>
@@ -112,8 +100,6 @@ export function renderBudget(w) {
               <td class="bud-cell avans"><strong>${fmtNum(t.avansEur)}</strong></td>
               <td class="bud-cell rest"><strong>${fmtNum(t.restRon)}</strong></td>
               <td class="bud-cell rest"><strong>${fmtNum(t.restEur)}</strong></td>
-              <td class="bud-cell total"><strong>${fmtNum(t.totalRon)}</strong></td>
-              <td class="bud-cell total"><strong>${fmtNum(t.totalEur)}</strong></td>
               <td></td><td></td>
             </tr>
           </tbody>
@@ -145,30 +131,52 @@ export function renderBudget(w) {
       <div class="card">
         <strong style="display:block;margin-bottom:14px;font-size:15px">🎁 "Dar" (cadou) per persoană</strong>
         <table class="bud-pp-table">
-          <thead><tr><th></th><th>RON</th><th>EUR</th></tr></thead>
+          <thead><tr><th></th><th>EUR</th><th>× ${guestCount} pers.</th></tr></thead>
           <tbody>
             <tr>
               <td>Dar așteptat / persoană</td>
-              <td class="bud-cell"><input type="number" data-gift-cur="ron" value="${b.giftPerPerson.ron || ''}" step="10" min="0" placeholder="0" /></td>
               <td class="bud-cell"><input type="number" data-gift-cur="eur" value="${b.giftPerPerson.eur || ''}" step="10" min="0" placeholder="0" /></td>
+              <td class="bud-cell" style="color:var(--muted)">${fmtEur((b.giftPerPerson.eur || 0) * guestCount)}</td>
             </tr>
-            <tr class="bud-totals-row">
-              <td><strong>Total dar (× ${guestCount})</strong></td>
-              <td class="bud-cell"><strong>${fmtRon((b.giftPerPerson.ron || 0) * guestCount)}</strong></td>
-              <td class="bud-cell"><strong>${fmtEur((b.giftPerPerson.eur || 0) * guestCount)}</strong></td>
+            <tr>
+              <td>Dar minim / persoană</td>
+              <td class="bud-cell"><input type="number" data-gift-min-cur="eur" value="${b.giftMinPerPerson.eur || ''}" step="10" min="0" placeholder="0" /></td>
+              <td class="bud-cell" style="color:var(--muted)">${fmtEur((b.giftMinPerPerson.eur || 0) * guestCount)}</td>
+            </tr>
+            <tr>
+              <td>Medie dar / persoană</td>
+              <td class="bud-cell"><input type="number" data-gift-avg-cur="eur" value="${b.giftAvgPerPerson.eur || ''}" step="10" min="0" placeholder="0" /></td>
+              <td class="bud-cell" style="color:var(--muted)">${fmtEur((b.giftAvgPerPerson.eur || 0) * guestCount)}</td>
             </tr>
           </tbody>
         </table>
-        <div style="margin-top:14px;padding:12px;background:${t.totalRon - (b.giftPerPerson.ron||0)*guestCount > 0 ? 'var(--red-lt)' : 'var(--green-lt)'};border-radius:8px;font-size:13px">
-          <strong>Bilanț:</strong>
-          ${(() => {
-            const expectedGift = (b.giftPerPerson.ron || 0) * guestCount;
-            const diff = t.totalRon - expectedGift;
-            if (diff > 0) return `<span class="c-declined">Rămân de acoperit ${fmtRon(diff)}</span> din buzunar`;
-            if (diff < 0) return `<span class="c-confirmed">Surplus estimat ${fmtRon(Math.abs(diff))}</span>`;
-            return 'Echilibrat';
-          })()}
-        </div>
+
+        ${(() => {
+          const avgTotal  = (b.giftAvgPerPerson.eur || 0) * guestCount;
+          const minTotal  = (b.giftMinPerPerson.eur || 0) * guestCount;
+          const expTotal  = (b.giftPerPerson.eur || 0) * guestCount;
+          const profitAvg = avgTotal - t.totalEur;
+          const profitMin = minTotal - t.totalEur;
+          const profitExp = expTotal - t.totalEur;
+          const hasAvg    = b.giftAvgPerPerson.eur > 0;
+          const hasMin    = b.giftMinPerPerson.eur > 0;
+
+          const row = (label, profit) => {
+            const positive = profit >= 0;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+              <span style="color:var(--muted);font-size:12px">${label}</span>
+              <strong class="${positive ? 'c-confirmed' : 'c-declined'}">${positive ? '+' : ''}${fmtEur(profit)}</strong>
+            </div>`;
+          };
+
+          return `
+          <div style="margin-top:14px;padding:12px;background:var(--sage-lt);border-radius:8px;font-size:13px">
+            <strong style="display:block;margin-bottom:8px">📊 Profit estimat</strong>
+            ${row('Scenariu așteptat', profitExp)}
+            ${hasMin ? row('Scenariu minim', profitMin) : ''}
+            ${hasAvg ? row('Scenariu medie', profitAvg) : ''}
+          </div>`;
+        })()}
       </div>
     </div>
   `;
@@ -290,23 +298,29 @@ function wireEvents(w, b) {
     });
   });
 
-  // Gift per person
-  document.querySelectorAll('[data-gift-cur]').forEach(inp => {
-    inp.addEventListener('change', e => {
-      const cur = e.target.dataset.giftCur;
-      const value = Math.max(0, parseFloat(e.target.value) || 0);
-      updateWedding(w.id, draft => {
-        ensureBudget(draft);
-        const r = draft.budget.exchangeRate || 5;
-        draft.budget.giftPerPerson[cur] = value;
-        const other = cur === 'ron' ? 'eur' : 'ron';
-        draft.budget.giftPerPerson[other] = cur === 'ron'
-          ? +(value / r).toFixed(2)
-          : +(value * r).toFixed(2);
+  // Gift per person (expected / min / avg)
+  const wireGiftField = (attr, datasetKey, budgetKey) => {
+    document.querySelectorAll(`[${attr}]`).forEach(inp => {
+      inp.addEventListener('change', e => {
+        const cur   = e.target.dataset[datasetKey];
+        const value = Math.max(0, parseFloat(e.target.value) || 0);
+        updateWedding(w.id, draft => {
+          ensureBudget(draft);
+          const r = draft.budget.exchangeRate || 5;
+          draft.budget[budgetKey][cur] = value;
+          const other = cur === 'ron' ? 'eur' : 'ron';
+          draft.budget[budgetKey][other] = cur === 'ron'
+            ? +(value / r).toFixed(2)
+            : +(value * r).toFixed(2);
+        });
+        emit('render');
       });
-      emit('render');
     });
-  });
+  };
+
+  wireGiftField('data-gift-cur',     'giftCur',    'giftPerPerson');
+  wireGiftField('data-gift-min-cur', 'giftMinCur', 'giftMinPerPerson');
+  wireGiftField('data-gift-avg-cur', 'giftAvgCur', 'giftAvgPerPerson');
 }
 
 // ── Add custom vendor (with optional per-person link) ─────────────────────────
@@ -389,8 +403,6 @@ function vendorRow(v, i, b, guestCount, ppKeys) {
       <td class="bud-cell avans"><input type="number" data-vendor-cell="eur" data-vendor-id="${v.id}" data-vendor-field="avansEur" value="${v.avansEur || ''}" step="10" min="0" placeholder="0" /></td>
       <td class="bud-cell rest ${rest.linked?'is-linked':''}">${restRonCell}</td>
       <td class="bud-cell rest ${rest.linked?'is-linked':''}">${restEurCell}</td>
-      <td class="bud-cell total"><strong>${fmtNum(totalRon)}</strong></td>
-      <td class="bud-cell total"><strong>${fmtNum(totalEur)}</strong></td>
       <td style="white-space:nowrap;text-align:center">
         <button class="paid-toggle ${v.avansPaid?'is-paid':''}" data-paid-toggle="avans" data-vendor-id="${v.id}" title="Avans plătit?">A</button>
         <button class="paid-toggle ${v.restPaid?'is-paid':''}"  data-paid-toggle="rest"  data-vendor-id="${v.id}" title="Rest plătit?">R</button>

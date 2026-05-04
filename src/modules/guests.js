@@ -91,6 +91,7 @@ export function renderGuests(w) {
   document.getElementById('guest-search')?.addEventListener('input', e => {
     search = e.target.value; page = 1;
     renderGuests(w);
+    document.getElementById('guest-search')?.focus();
   });
 
   document.getElementById('guest-rsvp-filter')?.addEventListener('change', e => {

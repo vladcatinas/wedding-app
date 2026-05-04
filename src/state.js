@@ -125,6 +125,8 @@ export function ensureBudget(wedding) {
       exchangeRate: 5,
       guestCount: null,
       giftPerPerson: { ron: 0, eur: 0 },
+      giftMinPerPerson: { ron: 0, eur: 0 },
+      giftAvgPerPerson: { ron: 0, eur: 0 },
       perPerson: {},
       vendors: [],
     };
@@ -135,6 +137,12 @@ export function ensureBudget(wedding) {
   wedding.budget.giftPerPerson ??= { ron: 0, eur: 0 };
   wedding.budget.giftPerPerson.ron ??= 0;
   wedding.budget.giftPerPerson.eur ??= 0;
+  wedding.budget.giftMinPerPerson ??= { ron: 0, eur: 0 };
+  wedding.budget.giftMinPerPerson.ron ??= 0;
+  wedding.budget.giftMinPerPerson.eur ??= 0;
+  wedding.budget.giftAvgPerPerson ??= { ron: 0, eur: 0 };
+  wedding.budget.giftAvgPerPerson.ron ??= 0;
+  wedding.budget.giftAvgPerPerson.eur ??= 0;
 
   wedding.budget.perPerson ??= {};
   for (const { key } of PER_PERSON_KEYS) {
@@ -180,6 +188,10 @@ export function ensureSeating(wedding) {
   wedding.seating ??= { tables: [], unassigned: [] };
   wedding.seating.tables ??= [];
   wedding.seating.unassigned ??= [];
+  wedding.seating.tables.forEach((t, i) => {
+    if (t.x == null) t.x = 40 + (i % 3) * 480;
+    if (t.y == null) t.y = 40 + Math.floor(i / 3) * 480;
+  });
 }
 
 export function syncUnassigned(wedding) {
